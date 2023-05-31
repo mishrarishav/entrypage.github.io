@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Data Entry Page</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .form-group label {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="collect-type">Select Collect Type:</label>
+          <select class="form-control" id="collect-type">
+            <option value="service-fee">Service Fee</option>
+            <option value="sustainable-fund">Sustainable Fund</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="year">Select Year:</label>
+          <select class="form-control" id="year"></select>
+        </div>
+        <div class="form-group">
+          <label for="month">Select Month:</label>
+          <select class="form-control" id="month"></select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>S.No.</th>
+              <th>Station Name</th>
+              <th>CC Name</th>
+              <th>Amount</th>
+              <th>Payment Mode</th>
+              <th>Payment By</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include Bootstrap JS (optional) -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    // Define the payment modes JSON
+    var paymentModes = [
+      { value: "upi", text: "UPI" },
+      { value: "neft", text: "NEFT" }
+    ];
+
+    // Define the payment by JSON
+    var paymentByOptions = [
+      { value: "staff", text: "Staff" },
+      { value: "ent", text: "ENT" },
+      { value: "cwet", text: "CWET" }
+    ];
+
+    // Function to dynamically populate years dropdown
+    function populateYears() {
+      var yearSelect = document.getElementById("year");
+      var currentYear = new Date().getFullYear();
+      var defaultYear = currentYear;
+      var option;
+
+      // Specify the minimum year you want to display
+      var minYear = 1950;
+
+      for (var i = currentYear; i >= minYear; i--) {
+        option = document.createElement("option");
+        option.value = i;
+        option.text = i;
+        yearSelect.appendChild(option);
+      }
+
+      yearSelect.value = defaultYear;
+    }
+
+    // Function to dynamically populate months dropdown
+    function populateMonths() {
+      var monthSelect = document.getElementById("month");
+      var currentMonth = new Date().getMonth() + 1; // Add 1 since getMonth() returns a zero-based index
+      var defaultMonth = currentMonth;
+      var option;
+
+      var months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+
+      for (var i = 1; i <= 12; i++) {
+        option = document.createElement("option");
+        option.value = i;
+        option.text = months[i - 1];
+        monthSelect.appendChild(option);
+      }
+
+      monthSelect.value = defaultMonth;
+    }
+
+    // Function to create the Payment Mode dropdown
+    function createPaymentModeDropdown() {
+      var paymentModeDropdown = document.createElement("select");
+      paymentModeDropdown.classList.add("form-control");
+
+      for (var i = 0; i < paymentModes.length; i++) {
+        var option = document.createElement("option");
+        option.value = paymentModes[i].value;
+        option.text = paymentModes[i].text;
+        paymentModeDropdown.appendChild(option);
+      }
+
+      return paymentModeDropdown;
+    }
+
+    // Function to create the Payment By dropdown
+    function createPaymentByDropdown() {
+      var paymentByDropdown = document.createElement("select");
+      paymentByDropdown.classList.add("form-control");
+
+      for (var i = 0; i < paymentByOptions.length; i++) {
+        var option = document.createElement("option");
+        option.value = paymentByOptions[i].value;
+        option.text = paymentByOptions[i].text;
+        paymentByDropdown.appendChild(option);
+      }
+
+      return paymentByDropdown;
+    }
+
+    // Function to store the inputted amount
+    function storeAmount(input) {
+      var amount = input.value;
+      // You can perform any further processing or store the value as needed
+      console.log("Amount: ", amount);
+    }
+
+    // Function to populate the table with data
+    function populateTable() {
+      var data = [
+        {
+          "sno": "1",
+          "station": "Station 1",
+          "ccname": "CC Name 1",
+          "amount": "100",
+          "paymentmode": "upi",
+          "paymentby": "staff"
+        },
+        {
+          "sno": "2",
+          "station": "Station 2",
+          "ccname": "CC Name 2",
+          "amount": "200",
+          "paymentmode": "neft",
+          "paymentby": "ent"
+        },
+        {
+          "sno": "3",
+          "station": "Station 3",
+          "ccname": "CC Name 3",
+          "amount": "300",
+          "paymentmode": "upi",
+          "paymentby": "cwet"
+        }
+      ];
+
+      var tableBody = document.getElementById("table-body");
+
+      for (var i = 0; i < data.length; i++) {
+        var row = document.createElement("tr");
+
+        var snoCell = document.createElement("td");
+        snoCell.textContent = data[i].sno;
+        row.appendChild(snoCell);
+
+        var stationCell = document.createElement("td");
+        stationCell.textContent = data[i].station;
+        row.appendChild(stationCell);
+
+        var ccnameCell = document.createElement("td");
+        ccnameCell.textContent = data[i].ccname;
+        row.appendChild(ccnameCell);
+
+        var amountCell = document.createElement("td");
+        var amountInput = document.createElement("input");
+        amountInput.type = "text";
+        amountInput.classList.add("form-control");
+        amountInput.setAttribute("placeholder", "Enter amount");
+        amountInput.setAttribute("oninput", "storeAmount(this)");
+        amountCell.appendChild(amountInput);
+        row.appendChild(amountCell);
+
+        var paymentmodeCell = document.createElement("td");
+        var paymentModeDropdown = createPaymentModeDropdown();
+        paymentModeDropdown.value = data[i].paymentmode;
+        paymentmodeCell.appendChild(paymentModeDropdown);
+        row.appendChild(paymentmodeCell);
+
+        var paymentbyCell = document.createElement("td");
+        var paymentByDropdown = createPaymentByDropdown();
+        paymentByDropdown.value = data[i].paymentby;
+        paymentbyCell.appendChild(paymentByDropdown);
+        row.appendChild(paymentbyCell);
+
+        tableBody.appendChild(row);
+      }
+    }
+
+    // Call the functions to populate the dropdowns and table
+    populateYears();
+    populateMonths();
+    populateTable();
+  </script>
+</body>
+</html>
