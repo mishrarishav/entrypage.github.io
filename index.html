@@ -50,10 +50,17 @@
         </table>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-12">
+        <button class="btn btn-primary" onclick="submitForm()">Submit</button>
+        <button class="btn btn-primary" onclick="printPDF()">Print PDF</button>
+      </div>
+    </div>
   </div>
 
   <!-- Include Bootstrap JS (optional) -->
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.10.0/jspdf.umd.min.js"></script>
   <script>
     // Define the payment modes JSON
     var paymentModes = [
@@ -216,6 +223,74 @@
 
         tableBody.appendChild(row);
       }
+    }
+
+    // Function to submit the form
+    function submitForm() {
+      var collectType = document.getElementById("collect-type").value;
+      var year = document.getElementById("year").value;
+      var month = document.getElementById("month").value;
+
+      var tableRows = document.getElementById("table-body").getElementsByTagName("tr");
+      var rowData = [];
+
+      for (var i = 0; i < tableRows.length; i++) {
+        var row = tableRows[i];
+        var sno = row.cells[0].textContent;
+        var station = row.cells[1].textContent;
+        var ccname = row.cells[2].textContent;
+        var amount = row.cells[3].getElementsByTagName("input")[0].value;
+        var paymentMode = row.cells[4].getElementsByTagName("select")[0].value;
+        var paymentBy = row.cells[5].getElementsByTagName("select")[0].value;
+
+        rowData.push({
+          "sno": sno,
+          "station": station,
+          "ccname": ccname,
+          "amount": amount,
+          "paymentmode": paymentMode,
+          "paymentby": paymentBy
+        });
+      }
+
+      console.log("Collect Type: ", collectType);
+      console.log("Year: ", year);
+      console.log("Month: ", month);
+      console.log("Table Data: ", rowData);
+    }
+
+    // Function to print the form as a PDF
+    function printPDF() {
+      var doc = new jsPDF();
+      doc.text("Form Data", 10, 10);
+
+      var collectType = document.getElementById("collect-type").value;
+      var year = document.getElementById("year").value;
+      var month = document.getElementById("month").value;
+
+      var tableRows = document.getElementById("table-body").getElementsByTagName("tr");
+      var rowData = "";
+
+      for (var i = 0; i < tableRows.length; i++) {
+        var row = tableRows[i];
+        var sno = row.cells[0].textContent;
+        var station = row.cells[1].textContent;
+        var ccname = row.cells[2].textContent;
+        var amount = row.cells[3].getElementsByTagName("input")[0].value;
+        var paymentMode = row.cells[4].getElementsByTagName("select")[0].value;
+        var paymentBy = row.cells[5].getElementsByTagName("select")[0].value;
+
+        rowData += "S.No.: " + sno + ", Station Name: " + station + ", CC Name: " + ccname +
+          ", Amount: " + amount + ", Payment Mode: " + paymentMode + ", Payment By: " + paymentBy + "\n";
+      }
+
+      doc.text("Collect Type: " + collectType, 10, 20);
+      doc.text("Year: " + year, 10, 30);
+      doc.text("Month: " + month, 10, 40);
+      doc.text("Table Data:", 10, 50);
+      doc.text(rowData, 10, 60);
+
+      doc.save("form.pdf");
     }
 
     // Call the functions to populate the dropdowns and table
